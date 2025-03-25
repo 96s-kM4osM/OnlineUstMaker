@@ -806,217 +806,99 @@ document.addEventListener('DOMContentLoaded', function() {
         // ノートを再描画
         renderNotes();
     }
-    
-    // MIDIファイルを生成して保存
-    function saveMIDI() {
-        // UST形式で保存
-        saveUST();
-        
-        // 古いアラートはコメントアウト
-        // alert('MIDIファイルの保存機能は現在開発中です。今後のアップデートをお待ちください。');
-        
-        // デバッグログ
-        console.log('MIDI/UST保存: ノート数 = ' + notes.length);
-        notes.forEach(note => {
-            const pitch = getMIDIPitch(note.noteIndex);
-            const startTime = note.startBeat;
-            const duration = note.duration;
-            console.log(`ノート: 音程=${pitch}, 開始=${startTime}, 長さ=${duration}`);
-        });
-    }
-    
-    // USTファイルとして保存する関数
-    function saveUST() {
-        // USTコンテンツを生成
-        let ustContent = "";
-        
-        // バージョン情報
-        ustContent += "[#VERSION]\nUST Version1.2\n";
-        
-        // 設定セクション
-        ustContent += "[#SETTING]\n";
-        ustContent += `Tempo=${tempo.toFixed(2)}\n`;
-        ustContent += "Tracks=1\n";
-        ustContent += "ProjectName=PianoRollProject\n";
-        ustContent += "VoiceDir=%VOICE%uta\n";
-        ustContent += "Tool1=wavtool.exe\n";
-        ustContent += "Tool2=resampler.exe\n";
-        ustContent += "Mode2=True\n";
-        
-        // ノートをソート
-        const sortedNotes = [...notes].sort((a, b) => a.startBeat - b.startBeat);
-        
-        // 休符を追加するための処理
-        const completedNotes = addRestNotes(sortedNotes);
-        
-        // 各ノートをUSTフォーマットに変換
-        completedNotes.forEach((note, index) => {
-            const prevNote = index > 0 ? completedNotes[index - 1] : null;
-            const nextNote = index < completedNotes.length - 1 ? completedNotes[index + 1] : null;
-            
-            ustContent += `[#${String(index).padStart(4, '0')}]\n`;
-            
-            // 長さを変換（ビート→UST単位）
-            const noteLength = Math.round(note.duration * 480);
-            ustContent += `Length=${noteLength}\n`;
-            
-            // 歌詞
-            ustContent += `Lyric=${note.lyric || 'R'}\n`;
-            
-            // MIDIノート番号
-            const midiPitch = getMIDIPitch(note.noteIndex);
-            ustContent += `NoteNum=${midiPitch}\n`;
-            
-            // 休符以外のノートのみ詳細パラメータを追加
-            if (note.lyric !== 'R') {
-                ustContent += "Intensity=100\n";
-                ustContent += "Modulation=0\n";
-                
-                // ピッチベンドパラメータ
-                ustContent += "PBType=5\n";
-                
-                // 前のノートからのピッチベンドを計算
-                const pitchBend = calculatePitchBend(note, prevNote);
-                ustContent += `PitchBend=${pitchBend}\n`;
-                
-                // ピッチベンド設定
-                ustContent += "PBS=-33\n";
-                ustContent += "PBW=66\n";
-                ustContent += "PBStart=-40\n";
-                
-                // エンベロープ設定（基本的な設定）
-                if (nextNote && nextNote.lyric !== 'R') {
-                    // 次のノートがある場合のエンベロープ
-                    ustContent += "Envelope=0,5,35,0,100,100,0\n";
-                } else {
-                    // 最後のノート用のエンベロープ
-                    ustContent += "Envelope=0,5,35,0,100,100,100,%,0\n";
-                }
+// USTファイルとして保存する関数（Shift_JIS版をAPI経由でDL）
+function saveUST() {
+    // USTコンテンツを生成
+    let ustContent = "";
+
+    // バージョン情報
+    ustContent += "[#VERSION]\nUST Version1.2\n";
+
+    // 設定セクション
+    ustContent += "[#SETTING]\n";
+    ustContent += `Tempo=${tempo.toFixed(2)}\n`;
+    ustContent += "Tracks=1\n";
+    ustContent += "ProjectName=PianoRollProject\n";
+    ustContent += "VoiceDir=%VOICE%uta\n";
+    ustContent += "Tool1=wavtool.exe\n";
+    ustContent += "Tool2=resampler.exe\n";
+    ustContent += "Mode2=True\n";
+
+    // ノートをソート
+    const sortedNotes = [...notes].sort((a, b) => a.startBeat - b.startBeat);
+
+    // 休符を追加するための処理
+    const completedNotes = addRestNotes(sortedNotes);
+
+    // 各ノートをUSTフォーマットに変換
+    completedNotes.forEach((note, index) => {
+        const prevNote = index > 0 ? completedNotes[index - 1] : null;
+        const nextNote = index < completedNotes.length - 1 ? completedNotes[index + 1] : null;
+
+        ustContent += `[#${String(index).padStart(4, '0')}]\n`;
+
+        // 長さを変換（ビート→UST単位）
+        const noteLength = Math.round(note.duration * 480);
+        ustContent += `Length=${noteLength}\n`;
+
+        // 歌詞
+        ustContent += `Lyric=${note.lyric || 'R'}\n`;
+
+        // MIDIノート番号
+        const midiPitch = getMIDIPitch(note.noteIndex);
+        ustContent += `NoteNum=${midiPitch}\n`;
+
+        // 休符以外のノートのみ詳細パラメータを追加
+        if (note.lyric !== 'R') {
+            ustContent += "Intensity=100\n";
+            ustContent += "Modulation=0\n";
+            ustContent += "PBType=5\n";
+            const pitchBend = calculatePitchBend(note, prevNote);
+            ustContent += `PitchBend=${pitchBend}\n`;
+            ustContent += "PBS=-33\n";
+            ustContent += "PBW=66\n";
+            ustContent += "PBStart=-40\n";
+            if (nextNote && nextNote.lyric !== 'R') {
+                ustContent += "Envelope=0,5,35,0,100,100,0\n";
+            } else {
+                ustContent += "Envelope=0,5,35,0,100,100,100,%,0\n";
             }
-        });
-        
-        // トラック終了
-        ustContent += "[#TRACKEND]\n";
-        
-        // ファイル保存処理（まずはUTF-8で）
-        const blob = new Blob([ustContent], {type: 'text/plain'});
+        }
+    });
+
+    // トラック終了
+    ustContent += "[#TRACKEND]\n";
+
+    // デバッグ出力
+    console.log("生成されたUSTファイル内容:", ustContent);
+
+    // 🔄 Render上のShift_JIS APIに送信
+    const apiUrl = "https://utf2sj4ust.onrender.com/ust";
+    fetch(apiUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "text/plain"
+        },
+        body: ustContent
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("変換APIでエラーが発生しました");
+        return response.blob();
+    })
+    .then(blob => {
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = url;
-        a.download = 'pianroll_export.ust';
+        a.download = "pianroll_export_shiftjis.ust";
         a.click();
         URL.revokeObjectURL(url);
-        
-        // デバッグ用にコンソールにも出力
-        console.log("生成されたUSTファイル内容:", ustContent);
-    }
-    
-    // 空白部分を休符で埋める関数
-    function addRestNotes(sortedNotes) {
-        const completeNotes = [];
-        let currentPosition = 0;
-        
-        for (const note of sortedNotes) {
-            // 現在位置とノートの開始位置の間に空白がある場合
-            if (note.startBeat > currentPosition) {
-                // 空白部分を4分音符単位で休符に分割
-                const restDuration = note.startBeat - currentPosition;
-                let remainingRest = restDuration;
-                
-                while (remainingRest > 0) {
-                    // 基本は4分音符長（1.0）、残りが少なければ残り全部
-                    const restLength = Math.min(1.0, remainingRest);
-                    
-                    completeNotes.push({
-                        id: `rest_${Date.now()}_${Math.random()}`,
-                        noteIndex: 60, // 中央Cを使用
-                        startBeat: currentPosition,
-                        duration: restLength,
-                        lyric: 'R'
-                    });
-                    
-                    currentPosition += restLength;
-                    remainingRest -= restLength;
-                }
-            }
-            
-            // 実際のノートを追加
-            completeNotes.push(note);
-            currentPosition = note.startBeat + note.duration;
-        }
-        
-        // 曲の最後の余白も休符で埋める
-        const totalLength = BARS * BEATS_PER_BAR;
-        if (currentPosition < totalLength) {
-            const finalRestDuration = totalLength - currentPosition;
-            let remainingRest = finalRestDuration;
-            
-            while (remainingRest > 0) {
-                const restLength = Math.min(1.0, remainingRest);
-                completeNotes.push({
-                    id: `rest_${Date.now()}_${Math.random()}`,
-                    noteIndex: 60,
-                    startBeat: currentPosition,
-                    duration: restLength,
-                    lyric: 'R'
-                });
-                
-                currentPosition += restLength;
-                remainingRest -= restLength;
-            }
-        }
-        
-        return completeNotes;
-    }
-    
-    // ピッチカーブを計算する関数
-    function calculatePitchBend(currentNote, prevNote) {
-        // 前のノートがない場合はフラットなカーブ
-        if (!prevNote || prevNote.lyric === 'R') {
-            return "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0";
-        }
-        
-        // 前のノートとの音程差を計算（半音単位）
-        const prevPitch = getMIDIPitch(prevNote.noteIndex);
-        const currentPitch = getMIDIPitch(currentNote.noteIndex);
-        const pitchDiff = prevPitch - currentPitch;
-        
-        // 音程差に比例した初期ピッチベンド値（100 = 半音）
-        const initialBend = pitchDiff * 100;
-        
-        // ピッチカーブを生成（最初が大きく、徐々に0に近づく）
-        const bendValues = [];
-        const bendPoints = 20; // ポイント数
-        
-        for (let i = 0; i < bendPoints; i++) {
-            // 指数関数的な減衰
-            const ratio = Math.pow(1 - i / bendPoints, 2);
-            const bendValue = Math.round(initialBend * ratio);
-            bendValues.push(bendValue);
-        }
-        
-        // 残りは0で埋める
-        while (bendValues.length < 100) {
-            bendValues.push(0);
-        }
-        
-        return bendValues.join(',');
-    }
-    
-    // ノートインデックスからMIDIピッチ番号を取得
-    function getMIDIPitch(noteIndex) {
-        const noteInfo = grid[noteIndex];
-        if (!noteInfo) return 60; // デフォルト: 中央C
-        
-        // オクターブと音名からMIDIピッチを計算
-        const octave = noteInfo.octave;
-        const keyIndex = KEYS.indexOf(noteInfo.key);
-        
-        // 計算式: (オクターブ+1) * 12 + キーインデックスからの補正
-        // キーはBから始まるので補正が必要
-        return (octave + 1) * 12 + (11 - keyIndex);
-    }
-    
+    })
+    .catch(error => {
+        console.error("UST保存中にエラー:", error);
+        alert("USTファイルの保存に失敗しました");
+    });
+}
+
     // 長押しタイマーを開始
     function startLongPressTimer(note, noteEl, event) {
         clearLongPressTimer(); // 既存のタイマーをクリア
