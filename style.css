@@ -1,0 +1,337 @@
+/* 基本スタイル */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #1a1a1a;
+    color: #fff;
+    overflow: hidden;
+}
+
+/* コンテナスタイル */
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* ツールバー */
+.toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 8px;
+    background-color: #2a2a2a;
+    border-bottom: 1px solid #3a3a3a;
+    gap: 8px;
+}
+
+.toolbar button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    background-color: #3a3a3a;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    min-width: 36px;
+    height: 36px;
+}
+
+.toolbar button:hover {
+    background-color: #4a4a4a;
+}
+
+.toolbar button.primary {
+    background-color: #0066cc;
+}
+
+.toolbar .spacer {
+    margin: 0 5px;
+    color: #555;
+}
+
+.toolbar select {
+    padding: 4px;
+    background-color: #3a3a3a;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+}
+
+/* ピアノロールエリア */
+.piano-roll-area {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ピアノキー */
+.piano-keys {
+    width: 80px;
+    overflow-y: scroll;
+    background-color: #222;
+    border-right: 1px solid #444;
+    margin-top: 24px; /* 小節番号の高さ分マージンを追加 */
+}
+
+.piano-key {
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    box-sizing: border-box;
+    border-bottom: 1px solid #333;
+    font-size: 12px;
+}
+
+.piano-key.white {
+    background-color: #333;
+}
+
+.piano-key.black {
+    background-color: #222;
+}
+
+/* グリッドエリア */
+.grid-area {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+}
+
+/* グリッド */
+.grid {
+    position: relative;
+    height: 10000px; /* 十分な高さを確保 */
+    width: 5000px; /* 十分な幅を確保 */
+}
+
+.grid-row {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 24px;
+    border-bottom: 1px solid #333;
+}
+
+.grid-row.white {
+    background-color: #2a2a2a;
+}
+
+.grid-row.black {
+    background-color: #262626;
+}
+
+/* ノート */
+.note {
+    position: absolute;
+    height: 20px;
+    background-color: #0077ee;
+    border: 1px solid #0055cc;
+    border-radius: 3px;
+    z-index: 10;
+    cursor: pointer;
+    padding-left: 5px;
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    color: #fff;
+}
+
+.note.selected {
+    border: 2px solid #ffcc00;
+    box-shadow: 0 0 5px rgba(255, 204, 0, 0.7);
+}
+
+.note.overlapping {
+    background-color: #ff5555;
+    border: 1px solid #dd3333;
+}
+
+/* 小節番号表示 */
+.bar-numbers {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background-color: rgba(40, 40, 40, 0.9);
+    z-index: 20;
+    border-bottom: 1px solid #3a3a3a;
+    overflow: hidden;
+}
+
+.bar-number {
+    position: absolute;
+    top: 0;
+    height: 24px;
+    line-height: 24px;
+    font-size: 11px;
+    color: #ccc;
+    padding-left: 5px;
+    user-select: none;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.control-group-title {
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 2px;
+}
+
+.button-row {
+    display: flex;
+    gap: 4px;
+}
+
+.control-button {
+    width: 40px;
+    height: 40px;
+    background-color: #444;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.grid-button {
+    width: auto;
+    min-width: 50px;
+    padding: 0 8px;
+}
+
+.active {
+    background-color: #0066cc;
+}
+
+/* プレイバック関連 */
+.playback-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.playback-controls button {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.tempo-control {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* 再生カーソル */
+.playback-cursor {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #ff0000;
+    z-index: 15;
+    pointer-events: none;
+}
+
+/* Volume Control */
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: auto;
+}
+
+#volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: #444;
+    border-radius: 3px;
+    outline: none;
+}
+
+#volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: #0066cc;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+#volume-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: #0066cc;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+#volume-percent {
+    width: 35px;
+    font-size: 12px;
+}
+
+/* ボタン無効化スタイル */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* モバイル操作パネル */
+.control-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(40, 40, 40, 0.9);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 1000;
+    max-height: 50vh;
+    overflow-y: auto;
+    max-width: 90vw;
+}
+
+/* インライン歌詞エディタ */
+.inline-lyric-editor {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    width: 100%;
+    background-color: rgba(40, 40, 40, 0.9);
+    border-radius: 4px;
+    padding: 5px;
+    z-index: 100;
+}
+
+.inline-lyric-editor input {
+    width: 100%;
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 3px;
+    padding: 3px 5px;
+    font-size: 12px;
+}

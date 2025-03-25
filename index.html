@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シンプルピアノロールエディタ</title>
+
+    <!-- 先にライブラリ読み込み -->
+    <script src="https://cdn.jsdelivr.net/npm/encoding-japanese@2.0.0/encoding.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+<!-- ツールバー -->
+        <div class="toolbar">
+            <button id="clear-btn" class="primary" title="クリア">🗑️</button>
+            <button id="undo-btn" title="元に戻す">↩️</button>
+            <button id="redo-btn" title="やり直す">↪️</button>
+            <button id="save-midi-btn" class="primary" title="MIDI保存">💾</button>
+            <div class="spacer">|</div>
+            <div class="playback-controls">
+                <button id="play-btn" title="再生">▶</button>
+                <button id="pause-btn" disabled title="一時停止">❚❚</button>
+                <button id="stop-btn" disabled title="停止">■</button>
+            </div>
+            <div class="spacer">|</div>
+            <div class="tempo-control">
+                <label for="tempo-input" title="テンポ">🎵</label>
+                <input type="number" id="tempo-input" min="40" max="300" value="120" style="width: 50px;" title="テンポ (BPM)">
+            </div>
+            <div class="spacer">|</div>
+            <div class="bar-count-control">
+                <label for="bar-count-input" title="小節数">📏</label>
+                <input type="number" id="bar-count-input" min="1" max="100" value="16" style="width: 50px;" title="小節数">
+            </div>
+            <div class="spacer">|</div>
+            <div class="lyric-mode-control">
+                <button id="lyric-mode-btn" title="歌詞入力モード切替">🔤</button>
+            </div>
+            <span id="overlap-info" style="color: #ff5555; margin-left: 5px; font-size: 12px;"></span>
+            <div class="spacer">|</div>
+            <div class="volume-control">
+                <span title="音量">🔊</span>
+                <input type="range" id="volume-slider" min="0" max="100" value="50" style="width: 80px; vertical-align: middle;">
+            </div>
+            <button id="sound-test" title="音テスト">🎹</button>
+        </div>
+        
+        <!-- ピアノロールエリア -->
+        <div class="piano-roll-area">
+            <!-- ピアノキー -->
+            <div class="piano-keys" id="piano-keys">
+                <!-- ピアノキーはJavaScriptで生成 -->
+            </div>
+            
+            <!-- グリッドエリア -->
+            <div class="grid-area" id="grid-area">
+                <!-- グリッド -->
+                <div class="bar-numbers" id="bar-numbers">
+                    <!-- 小節番号はJavaScriptで生成 -->
+                </div>
+                <div class="grid" id="grid">
+                    <!-- グリッド行はJavaScriptで生成 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- モバイル操作パネル -->
+        <div class="control-panel">
+            <!-- ノート操作 -->
+            <div class="control-group">
+                <div class="control-group-title">ノート移動</div>
+                <div class="button-row">
+                    <button class="control-button" id="move-left">←</button>
+                    <button class="control-button" id="move-right">→</button>
+                </div>
+                <div class="button-row">
+                    <button class="control-button" id="move-up">↑</button>
+                    <button class="control-button" id="move-down">↓</button>
+                </div>
+            </div>
+            
+            <!-- ノート長さ -->
+            <div class="control-group">
+                <div class="control-group-title">長さ</div>
+                <div class="button-row">
+                    <button class="control-button" id="shorter">−</button>
+                    <button class="control-button" id="longer">＋</button>
+                </div>
+            </div>
+            
+            <!-- グリッド設定 -->
+            <div class="control-group">
+                <div class="control-group-title">グリッド</div>
+                <div class="button-row">
+                    <button class="control-button grid-button" id="grid-4th">4分</button>
+                    <button class="control-button grid-button" id="grid-8th">8分</button>
+                </div>
+                <div class="button-row">
+                    <button class="control-button grid-button" id="grid-16th">16分</button>
+                    <button class="control-button grid-button" id="grid-32nd">32分</button>
+                </div>
+                <div class="button-row" style="margin-top: 4px;">
+                    <label style="display: flex; align-items: center; cursor: pointer; color: #aaa; font-size: 12px;">
+                        <input type="checkbox" id="triplet-grid" style="margin-right: 5px;"> トリプレット
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/encoding-japanese@2.0.0/encoding.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
